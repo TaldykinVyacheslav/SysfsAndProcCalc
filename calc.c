@@ -1,7 +1,17 @@
+#define SYSFS
+
+
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/string.h>
+
+#ifdef SYSFS
+#include <linux/init.h>
+#include <linux/fs.h>
+#include <linux/slab.h>
+#else
 #include <linux/proc_fs.h>
+#endif
 
 #define WRITE_SIZE 100
 
