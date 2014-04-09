@@ -1,7 +1,4 @@
-fs="$1"
-
-echo "$2" > /$fs/calc/arg1
-echo "$4" > /$fs/calc/arg2
-echo "$3" > /$fs/calc/operation
-
-cat /$fs/calc/result
+echo "2" > /sys/calc/arg1
+echo "4" > /sys/calc/arg2
+echo "-" > /sys/calc/operation
+cat /sys/calc/result
