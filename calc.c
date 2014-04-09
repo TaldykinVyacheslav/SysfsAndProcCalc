@@ -21,14 +21,11 @@
 
 #define PARENT_DIR "calc"
 
-
 #define WRITE_SIZE 100
 
 static char arg1_input[WRITE_SIZE];
 static char arg2_input[WRITE_SIZE];
 static char operation_input[WRITE_SIZE];
-
-
 
 long calculate(void) {
 	long a1 = 0;
@@ -55,19 +52,10 @@ long calculate(void) {
 }
 
 #ifdef SYSFS
-
-/*
- struct kobj_type represents a type of objects, and will hold the methods used to operate on them. 
-*/
-struct calc_attr {
-	struct attribute attr;
-	int value;
-};
-
 /*
 The attributes describe the ordinary files in the sysfs tree.
 */
-// 0644 - rw for owner, group and the world
+// 0666 - rw for owner, group and the world
 static struct attribute arg1 = {
 	.name = ARG1,
 	.mode = 0666,
@@ -147,21 +135,25 @@ A struct kobject represents a kernel object, maybe a device or so, such as the t
 
 The __init macro causes the init function to be discarded and its memory freed once the init function finishes for built-in drivers, but not loadable modules.
 */
-struct kobject *calc_obj;
-static int __init sysfsexample_module_init(void)
-{
-	int err = -1;
 //kzalloc — allocate memory. The memory is set to zero.
 /*
 GFP_KERNEL will try a little harder to find memory.  There's a
 possibility that the call to kmalloc() will sleep while the kernel is
 trying to find memory (thus making it unsuitable for interrupt
+
 handlers).  It's much more rare for an allocation with GFP_KERNEL to
 fail than with GFP_ATOMIC. GFP_ATOMIC means roughly "make the allocation operation atomic".
 */
+struct kobject *calc_obj;
+static int __init sysfsexample_module_init(void)
+{
+	int err = -1;
+
 	calc_obj = kzalloc(sizeof(*calc_obj), GFP_KERNEL);
 	if (calc_obj) {
+		//kobject_init — initialize a kobject structure
 		kobject_init(calc_obj, &calc_type);
+		//The kobject name is set and added to the kobject hierarchy in this function.
 		if (kobject_add(calc_obj, NULL, "%s", PARENT_DIR)) {
 			 err = -1;
 			 printk("Sysfs creation failed\n");
@@ -252,7 +244,6 @@ int read_result(char *buffer, char **buffer_location,
 	return sprintf(buffer, "%ld\n", res);
 }
 
-//#define ENOMEM          12      /* Out of memory */
 //KERN_INFO - info log level
 int init_module()
 {
